@@ -143,6 +143,9 @@ class ShareesAPIController extends OCSController {
 		// In global scale mode we always search the loogup server
 		if ($this->config->getSystemValueBool('gs.enabled', false)) {
 			$lookup = true;
+			$this->result['lookupEnabled'] = true;
+		} else {
+			$this->result['lookupEnabled'] = $this->config->getAppValue('files_sharing', 'lookupServerEnabled', 'yes') === 'yes';
 		}
 
 		// only search for string larger than a given threshold
@@ -219,7 +222,6 @@ class ShareesAPIController extends OCSController {
 			$result['exact'] = array_merge($this->result['exact'], $result['exact']);
 		}
 		$this->result = array_merge($this->result, $result);
-		$this->result['lookupEnabled'] = $this->config->getAppValue('files_sharing', 'lookupServerEnabled', 'yes') === 'yes';
 		$response = new DataResponse($this->result);
 
 		if ($hasMoreResults) {

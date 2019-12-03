@@ -23,6 +23,7 @@
 <template>
 	<Multiselect ref="multiselect"
 		class="sharing-input"
+		:clear-on-select="false"
 		:disabled="!canReshare"
 		:hide-selected="true"
 		:internal-search="false"
@@ -391,8 +392,17 @@ export default {
 		 */
 		async addShare(value) {
 			if (value.lookup) {
-				return this.getSuggestions(this.query, true)
+				await this.getSuggestions(this.query, true)
+
+				// focus the input again
+				this.$nextTick(() => {
+					this.$refs.multiselect.$el.querySelector('.multiselect__input').focus()
+				})
+				return true
 			}
+
+			// TODO: reset the search string when done
+			// https://github.com/shentao/vue-multiselect/issues/633
 
 			// handle externalResults from OCA.Sharing.ShareSearch
 			if (value.handler) {

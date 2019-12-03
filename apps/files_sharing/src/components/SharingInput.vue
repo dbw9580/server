@@ -176,10 +176,12 @@ export default {
 		 * @param {string} search the search query
 		 * @param {boolean} [lookup=false] search on lookup server
 		 */
-		async getSuggestions(search, lookup) {
+		async getSuggestions(search, lookup = false) {
 			this.loading = true
-			lookup = lookup || false
-			console.info(search, lookup)
+
+			if (OC.getCapabilities().files_sharing.sharee.query_lookup_default === true) {
+				lookup = true
+			}
 
 			const request = await axios.get(generateOcsUrl('apps/files_sharing/api/v1') + 'sharees', {
 				params: {
@@ -215,8 +217,9 @@ export default {
 				.sort((a, b) => a.shareType - b.shareType)
 
 			// lookup clickable entry
+			// show if enabled and not already requested
 			const lookupEntry = []
-			if (data.lookupEnabled) {
+			if (data.lookupEnabled && !lookup) {
 				lookupEntry.push({
 					isNoUser: true,
 					displayName: t('files_sharing', 'Search globally'),
